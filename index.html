@@ -1,0 +1,3606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReyuChat ⭐</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#e9edef;
+  height:100vh;
+  overflow:hidden;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+}
+
+input,textarea{
+  outline:none;
+}
+
+/* LOGIN */
+#loginPage{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0088cc,#005f91);
+}
+
+.loginBox{
+  width:90%;
+  max-width:400px;
+  background:white;
+  padding:30px 25px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  text-align:center;
+}
+
+.logo{
+  font-size:30px;
+  font-weight:bold;
+  color:#0088cc;
+  margin-bottom:20px;
+}
+
+.loginBox input{
+  width:100%;
+  padding:14px;
+  margin:7px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:15px;
+}
+
+.loginBtn{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:10px;
+  background:#0088cc;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.switchBtn{
+  margin-top:15px;
+  background:none;
+  color:#0088cc;
+  font-size:14px;
+}
+
+/* APP */
+#app{
+  display:none;
+  height:100vh;
+}
+
+.sidebar{
+  width:100%;
+  height:100%;
+  background:white;
+}
+
+.topbar{
+  height:65px;
+  background:#0088cc;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 15px;
+  position:relative;
+}
+
+.topbar h2{
+  font-size:21px;
+}
+
+.topbar button{
+  background:none;
+  color:white;
+  font-size:24px;
+  margin-left:12px;
+}
+
+.search{
+  padding:10px;
+  background:#f5f5f5;
+}
+
+.search input{
+  width:100%;
+  padding:11px 15px;
+  border:none;
+  border-radius:20px;
+  background:white;
+}
+
+.chatList{
+  overflow-y:auto;
+  height:calc(100vh - 115px);
+}
+
+.chat{
+  display:flex;
+  align-items:center;
+  padding:13px 15px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.chat:hover{
+  background:#f5f5f5;
+}
+
+.avatar{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:#0088cc;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:21px;
+  margin-right:12px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.chatInfo{
+  flex:1;
+  min-width:0;
+}
+
+.chatName{
+  font-weight:bold;
+  font-size:16px;
+}
+
+.usernameSmall{
+  color:#0088cc;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.preview{
+  color:#777;
+  font-size:13px;
+  margin-top:5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.emptyUsers{
+  text-align:center;
+  padding:40px 20px;
+  color:#777;
+  line-height:1.6;
+}
+
+/* CHAT */
+#chatPage{
+  display:none;
+  height:100vh;
+  flex-direction:column;
+  background:#efeae2;
+}
+
+.chatHeader{
+  height:65px;
+  background:#0088cc;
+  color:white;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+}
+
+.backBtn{
+  background:none;
+  color:white;
+  font-size:27px;
+  margin-right:10px;
+}
+
+.headerAvatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:white;
+  color:#0088cc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  margin-right:10px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+.headerAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.headerName{
+  font-size:17px;
+  font-weight:bold;
+}
+
+.headerUsername{
+  font-size:12px;
+  opacity:.85;
+  margin-top:2px;
+}
+
+.messages{
+  flex:1;
+  overflow-y:auto;
+  padding:15px;
+}
+
+.message{
+  max-width:78%;
+  padding:9px 11px;
+  margin:6px 0;
+  border-radius:10px;
+  word-wrap:break-word;
+  position:relative;
+}
+
+.me{
+  margin-left:auto;
+  background:#d9fdd3;
+}
+
+.them{
+  margin-right:auto;
+  background:white;
+}
+
+.messageTime{
+  font-size:10px;
+  color:#777;
+  margin-top:4px;
+  text-align:right;
+}
+
+.message img{
+  max-width:100%;
+  max-height:300px;
+  border-radius:8px;
+  display:block;
+}
+
+.fileLink{
+  color:#0088cc;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.voicePlayer{
+  width:220px;
+  max-width:100%;
+}
+
+.composer{
+  background:#f0f0f0;
+  padding:8px;
+  display:flex;
+  align-items:flex-end;
+  gap:5px;
+}
+
+.composer button{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:white;
+  font-size:20px;
+  flex-shrink:0;
+}
+
+#voiceBtn{
+  transition:.2s;
+}
+
+#messageInput{
+  flex:1;
+  min-height:42px;
+  max-height:130px;
+  resize:none;
+  border:none;
+  border-radius:20px;
+  padding:11px 15px;
+  font-size:15px;
+}
+
+.sendBtn{
+  background:#0088cc !important;
+  color:white;
+}
+
+/* EMOJI */
+#emojiPanel{
+  display:none;
+  position:absolute;
+  bottom:65px;
+  left:5px;
+  right:5px;
+  background:white;
+  padding:12px;
+  border-radius:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,.2);
+  font-size:25px;
+  max-height:180px;
+  overflow-y:auto;
+  z-index:30;
+}
+
+.emoji{
+  display:inline-block;
+  padding:5px;
+  cursor:pointer;
+}
+
+/* MENU */
+.menu{
+  display:none;
+  position:absolute;
+  top:58px;
+  right:10px;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,.2);
+  z-index:50;
+  overflow:hidden;
+}
+
+.menu button{
+  display:block;
+  width:180px;
+  padding:13px;
+  background:white;
+  color:#222;
+  text-align:left;
+  font-size:14px;
+  margin:0;
+}
+
+.menu button:hover{
+  background:#eee;
+}
+
+/* PROFILE */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  z-index:100;
+  justify-content:center;
+  align-items:center;
+}
+
+.modalBox{
+  width:90%;
+  max-width:400px;
+  background:white;
+  border-radius:15px;
+  padding:20px;
+}
+
+.modalBox h3{
+  margin-bottom:15px;
+}
+
+.modalBox input,
+.modalBox textarea{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+.modalButtons{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.modalButtons button{
+  flex:1;
+  padding:12px;
+  border-radius:8px;
+}
+
+.saveBtn{
+  background:#0088cc;
+  color:white;
+}
+
+.closeBtn{
+  background:#ddd;
+}
+
+.loading{
+  text-align:center;
+  padding:30px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LOGIN / REGISTER
+========================= -->
+
+<div id="loginPage">
+
+  <div class="loginBox">
+
+    <div class="logo">
+      ReyuChat ⭐
+    </div>
+
+    <div id="registerFields">
+
+      <input
+        id="displayName"
+        type="text"
+        placeholder="Display Name">
+
+      <input
+        id="username"
+        type="text"
+        placeholder="Username">
+
+    </div>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email">
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password">
+
+    <button
+      class="loginBtn"
+      onclick="handleAuth()"
+      id="authBtn">
+      Register
+    </button>
+
+    <button
+      class="switchBtn"
+      onclick="toggleAuthMode()"
+      id="switchBtn">
+      Already have an account? Login
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<div id="app">
+
+  <div class="sidebar">
+
+    <div class="topbar">
+
+      <h2>
+        ReyuChat ⭐
+      </h2>
+
+      <div>
+
+        <button onclick="openSearch()">
+          🔍
+        </button>
+
+        <button onclick="toggleMenu()">
+          ⋮
+        </button>
+
+      </div>
+
+      <div
+        class="menu"
+        id="mainMenu">
+
+        <button onclick="openProfile()">
+          👤 Profile
+        </button>
+
+        <button onclick="newChat()">
+          ➕ New Chat
+        </button>
+
+        <button onclick="showGroups()">
+          👥 Groups
+        </button>
+
+        <button onclick="showChannels()">
+          📢 Channels
+        </button>
+
+        <button onclick="showSettings()">
+          ⚙️ Settings
+        </button>
+
+        <button onclick="logout()">
+          🚪 Logout
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="search">
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search users"
+        oninput="searchChats()">
+
+    </div>
+
+    <div
+      class="chatList"
+      id="chatList">
+
+      <div class="loading">
+        Loading users...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     CHAT
+========================= -->
+
+<div id="chatPage">
+
+  <div class="chatHeader">
+
+    <button
+      class="backBtn"
+      onclick="backToChats()">
+      ‹
+    </button>
+
+    <div
+      class="headerAvatar"
+      id="headerAvatar">
+      R
+    </div>
+
+    <div>
+
+      <div
+        class="headerName"
+        id="chatTitle">
+        Chat
+      </div>
+
+      <div
+        class="headerUsername"
+        id="chatUsername">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="messages"
+    id="messages">
+  </div>
+
+
+  <div style="position:relative">
+
+    <div id="emojiPanel">
+
+      <span class="emoji">😀</span>
+      <span class="emoji">😂</span>
+      <span class="emoji">🤣</span>
+      <span class="emoji">😊</span>
+      <span class="emoji">😍</span>
+      <span class="emoji">🥰</span>
+      <span class="emoji">😎</span>
+      <span class="emoji">😭</span>
+      <span class="emoji">😡</span>
+      <span class="emoji">❤️</span>
+      <span class="emoji">🖤</span>
+      <span class="emoji">💔</span>
+      <span class="emoji">👍</span>
+      <span class="emoji">👎</span>
+      <span class="emoji">🔥</span>
+      <span class="emoji">⭐</span>
+      <span class="emoji">✨</span>
+      <span class="emoji">🎉</span>
+      <span class="emoji">🙏</span>
+      <span class="emoji">🤲</span>
+      <span class="emoji">☝️</span>
+
+    </div>
+
+  </div>
+
+
+  <div class="composer">
+
+    <button onclick="toggleEmoji()">
+      😊
+    </button>
+
+    <button onclick="photoInput.click()">
+      📷
+    </button>
+
+    <button onclick="fileInput.click()">
+      📎
+    </button>
+
+    <button
+      onclick="toggleVoice()"
+      id="voiceBtn"
+      title="Record voice message">
+      🎤
+    </button>
+
+    <textarea
+      id="messageInput"
+      placeholder="Message..."
+      rows="1"></textarea>
+
+    <button
+      class="sendBtn"
+      onclick="sendMessage()">
+      ➤
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- FILE INPUTS -->
+
+<input
+  type="file"
+  id="photoInput"
+  accept="image/*"
+  style="display:none">
+
+<input
+  type="file"
+  id="fileInput"
+  style="display:none">
+
+
+<!-- =========================
+     PROFILE MODAL
+========================= -->
+
+<div
+  class="modal"
+  id="profileModal">
+
+  <div class="modalBox">
+
+    <h3>
+      👤 My Profile
+    </h3>
+
+    <div
+      style="text-align:center;margin-bottom:10px">
+
+      <div
+        class="avatar"
+        id="profileAvatar"
+        style="width:90px;height:90px;margin:auto">
+        R
+      </div>
+
+      <input
+        type="file"
+        id="profilePhoto"
+        accept="image/*"
+        style="margin-top:10px">
+
+    </div>
+
+    <input
+      id="profileDisplayName"
+      placeholder="Display Name">
+
+    <input
+      id="profileUsername"
+      placeholder="Username">
+
+    <textarea
+      id="profileBio"
+      placeholder="Bio"></textarea>
+
+    <div class="modalButtons">
+
+      <button
+        class="closeBtn"
+        onclick="closeProfile()">
+        Cancel
+      </button>
+
+      <button
+        class="saveBtn"
+        onclick="saveProfile()">
+        Save
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+'https://ijbuxxresgfeiisphijh.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+'sb_publishable_UoarZeOiAFcP9qw1rRvrQw_4YK14CZ6';
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let currentUser = null;
+let currentChatUser = null;
+let authMode = 'register';
+let realtimeChannel = null;
+let allUsers = [];
+
+
+/* =========================
+   VOICE
+========================= */
+
+let mediaRecorder = null;
+let audioChunks = [];
+let voiceStream = null;
+let isRecording = false;
+
+
+/* =========================
+   AUTH MODE
+========================= */
+
+function toggleAuthMode(){
+
+  if(authMode === 'register'){
+
+    authMode = 'login';
+
+    document.getElementById(
+      'registerFields'
+    ).style.display = 'none';
+
+    document.getElementById(
+      'authBtn'
+    ).textContent = 'Login';
+
+    document.getElementById(
+      'switchBtn'
+    ).textContent =
+      "Don't have an account? Register";
+
+  }else{
+
+    authMode = 'register';
+
+    document.getElementById(
+      'registerFields'
+    ).style.display = 'block';
+
+    document.getElementById(
+      'authBtn'
+    ).textContent = 'Register';
+
+    document.getElementById(
+      'switchBtn'
+    ).textContent =
+      'Already have an account? Login';
+
+  }
+
+}
+
+
+/* =========================
+   AUTH
+   FIXED REGISTRATION
+========================= */
+
+async function handleAuth(){
+
+  const authBtn =
+    document.getElementById('authBtn');
+
+  authBtn.disabled = true;
+
+  authBtn.textContent =
+    authMode === 'login'
+      ? 'Logging in...'
+      : 'Registering...';
+
+
+  try{
+
+    const email =
+      document
+        .getElementById('email')
+        .value
+        .trim()
+        .toLowerCase();
+
+    const password =
+      document
+        .getElementById('password')
+        .value;
+
+
+    /* BASIC VALIDATION */
+
+    if(!email){
+
+      alert('Please enter your email.');
+
+      return;
+
+    }
+
+
+    if(!email.includes('@')){
+
+      alert('Please enter a valid email address.');
+
+      return;
+
+    }
+
+
+    if(!password){
+
+      alert('Please enter your password.');
+
+      return;
+
+    }
+
+
+    if(password.length < 6){
+
+      alert(
+        'Password must be at least 6 characters.'
+      );
+
+      return;
+
+    }
+
+
+    /* =========================
+       LOGIN
+    ========================= */
+
+    if(authMode === 'login'){
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInWithPassword({
+
+            email:email,
+
+            password:password
+
+          });
+
+
+      if(error){
+
+        alert(
+          'Login failed: ' +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      if(!data || !data.user){
+
+        alert(
+          'Login failed. Please try again.'
+        );
+
+        return;
+
+      }
+
+
+      currentUser =
+        data.user;
+
+
+      await loadProfile();
+
+      await showApp();
+
+      return;
+
+    }
+
+
+    /* =========================
+       REGISTER DATA
+    ========================= */
+
+    const displayName =
+      document
+        .getElementById('displayName')
+        .value
+        .trim();
+
+    let username =
+      document
+        .getElementById('username')
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    if(!displayName){
+
+      alert(
+        'Please enter your Display Name.'
+      );
+
+      return;
+
+    }
+
+
+    if(!username){
+
+      alert(
+        'Please enter your Username.'
+      );
+
+      return;
+
+    }
+
+
+    /* REMOVE @ IF USER TYPES IT */
+
+    username =
+      username.replace(/^@/,'');
+
+
+    document.getElementById(
+      'username'
+    ).value = username;
+
+
+    /* USERNAME VALIDATION */
+
+    if(!/^[a-z0-9_]+$/.test(username)){
+
+      alert(
+        'Username can contain only letters, numbers and _.'
+      );
+
+      return;
+
+    }
+
+
+    if(username.length < 3){
+
+      alert(
+        'Username must be at least 3 characters.'
+      );
+
+      return;
+
+    }
+
+
+    if(username.length > 30){
+
+      alert(
+        'Username must be 30 characters or less.'
+      );
+
+      return;
+
+    }
+
+
+    /* =========================
+       CHECK USERNAME BEFORE
+       CREATING AUTH ACCOUNT
+    ========================= */
+
+    const {
+      data:existingUsername,
+      error:usernameCheckError
+    } =
+      await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('username',username)
+        .maybeSingle();
+
+
+    if(usernameCheckError){
+
+      console.log(
+        'Username check error:',
+        usernameCheckError
+      );
+
+      alert(
+        'Could not check username:\n' +
+        usernameCheckError.message
+      );
+
+      return;
+
+    }
+
+
+    if(existingUsername){
+
+      alert(
+        'This username is already taken.\n\nChoose another username.'
+      );
+
+      return;
+
+    }
+
+
+    /* =========================
+       CREATE AUTH USER
+    ========================= */
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email:email,
+
+        password:password,
+
+        options:{
+          data:{
+            display_name:displayName
+          }
+        }
+
+      });
+
+
+    if(error){
+
+      console.log(
+        'Registration error:',
+        error
+      );
+
+      alert(
+        'Registration failed:\n\n' +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    if(!data || !data.user){
+
+      alert(
+        'Registration failed. No user was created.'
+      );
+
+      return;
+
+    }
+
+
+    currentUser =
+      data.user;
+
+
+    /* =========================
+       CREATE PROFILE
+    ========================= */
+
+    const {
+      error:profileError
+    } =
+      await supabaseClient
+        .from('profiles')
+        .insert({
+
+          id:data.user.id,
+
+          username:username,
+
+          display_name:displayName
+
+        });
+
+
+    if(profileError){
+
+      console.log(
+        'Profile error:',
+        profileError
+      );
+
+
+      /* DUPLICATE USERNAME */
+
+      if(profileError.code === '23505'){
+
+        alert(
+          'This username is already taken.\n\nPlease use another username.'
+        );
+
+        return;
+
+      }
+
+
+      /* RLS ERROR */
+
+      if(
+        profileError.code === '42501' ||
+        profileError.message
+          .toLowerCase()
+          .includes('row-level security')
+      ){
+
+        alert(
+          'Your account was created, but your profile could not be saved.\n\n' +
+          'Please check the profiles INSERT RLS policy in Supabase.'
+        );
+
+        return;
+
+      }
+
+
+      alert(
+        'Account created, but profile setup failed:\n\n' +
+        profileError.message
+      );
+
+      return;
+
+    }
+
+
+    /* SAVE LOCAL PROFILE */
+
+    localStorage.setItem(
+      'reyu_display_name',
+      displayName
+    );
+
+    localStorage.setItem(
+      'reyu_username',
+      username
+    );
+
+
+    /* =========================
+       SUCCESS
+    ========================= */
+
+    if(data.session){
+
+      await loadProfile();
+
+      alert(
+        'Registration successful! 🎉\n\nWelcome to ReyuChat ⭐'
+      );
+
+      await showApp();
+
+      return;
+
+    }
+
+
+    /* EMAIL CONFIRMATION */
+
+    alert(
+      'Account created successfully! 🎉\n\n' +
+      'Please confirm your email, then login.'
+    );
+
+    toggleAuthMode();
+
+  }catch(error){
+
+    console.log(
+      'Unexpected auth error:',
+      error
+    );
+
+    alert(
+      'Something went wrong:\n\n' +
+      (error.message || error)
+    );
+
+  }finally{
+
+    authBtn.disabled = false;
+
+    authBtn.textContent =
+      authMode === 'login'
+        ? 'Login'
+        : 'Register';
+
+  }
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+async function loadProfile(){
+
+  if(!currentUser)
+    return;
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from('profiles')
+      .select('*')
+      .eq('id',currentUser.id)
+      .maybeSingle();
+
+
+  if(error){
+
+    console.log(
+      'Profile load error:',
+      error
+    );
+
+    return;
+
+  }
+
+
+  if(data){
+
+    localStorage.setItem(
+      'reyu_display_name',
+      data.display_name || ''
+    );
+
+    localStorage.setItem(
+      'reyu_username',
+      data.username || ''
+    );
+
+  }
+
+
+  /* PROFILE AVATAR */
+
+  const photo =
+    localStorage.getItem(
+      'reyu_profile_photo'
+    );
+
+
+  if(photo){
+
+    const avatar =
+      document.getElementById(
+        'profileAvatar'
+      );
+
+    if(avatar){
+
+      avatar.innerHTML =
+        '<img src="' +
+        photo +
+        '" alt="Profile">';
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   SHOW APP
+========================= */
+
+async function showApp(){
+
+  document.getElementById(
+    'loginPage'
+  ).style.display='none';
+
+  document.getElementById(
+    'app'
+  ).style.display='block';
+
+  document.getElementById(
+    'chatPage'
+  ).style.display='none';
+
+
+  await loadUsers();
+
+  subscribeToMessages();
+
+}
+
+
+/* =========================
+   USERS
+========================= */
+
+async function loadUsers(){
+
+  if(!currentUser)
+    return;
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from('profiles')
+      .select(
+        'id,username,display_name'
+      )
+      .neq(
+        'id',
+        currentUser.id
+      )
+      .order(
+        'display_name',
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    document.getElementById(
+      'chatList'
+    ).innerHTML =
+      '<div class="emptyUsers">' +
+      'Unable to load users.<br><br>' +
+      error.message +
+      '</div>';
+
+    return;
+
+  }
+
+
+  allUsers =
+    data || [];
+
+
+  renderUsers(allUsers);
+
+}
+
+
+function renderUsers(users){
+
+  const list =
+    document.getElementById(
+      'chatList'
+    );
+
+
+  list.innerHTML='';
+
+
+  if(users.length===0){
+
+    list.innerHTML =
+      '<div class="emptyUsers">' +
+      '👥 No other users yet.<br><br>' +
+      'Register another account to test Real Chat ⭐' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  users.forEach(function(user){
+
+    const chat =
+      document.createElement(
+        'div'
+      );
+
+    chat.className='chat';
+
+
+    const avatar =
+      document.createElement(
+        'div'
+      );
+
+    avatar.className='avatar';
+
+    avatar.textContent =
+      (
+        user.display_name ||
+        user.username ||
+        'R'
+      )
+      .charAt(0)
+      .toUpperCase();
+
+
+    const info =
+      document.createElement(
+        'div'
+      );
+
+    info.className='chatInfo';
+
+
+    const name =
+      document.createElement(
+        'div'
+      );
+
+    name.className='chatName';
+
+    name.textContent =
+      user.display_name ||
+      user.username ||
+      'User';
+
+
+    const username =
+      document.createElement(
+        'div'
+      );
+
+    username.className=
+      'usernameSmall';
+
+    username.textContent =
+      '@' +
+      (user.username || '');
+
+
+    const preview =
+      document.createElement(
+        'div'
+      );
+
+    preview.className='preview';
+
+    preview.textContent =
+      'Start chatting';
+
+
+    info.appendChild(name);
+
+    info.appendChild(username);
+
+    info.appendChild(preview);
+
+    chat.appendChild(avatar);
+
+    chat.appendChild(info);
+
+
+    chat.onclick =
+      function(){
+
+        openChat(user);
+
+      };
+
+
+    list.appendChild(chat);
+
+  });
+
+}
+
+
+/* =========================
+   NEW CHAT
+========================= */
+
+async function newChat(){
+
+  document.getElementById(
+    'mainMenu'
+  ).style.display='none';
+
+
+  const username =
+    prompt(
+      'Enter username (without @):'
+    );
+
+
+  if(!username)
+    return;
+
+
+  const cleanUsername =
+    username
+      .trim()
+      .toLowerCase()
+      .replace(/^@/,'');
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from('profiles')
+      .select(
+        'id,username,display_name'
+      )
+      .eq(
+        'username',
+        cleanUsername
+      )
+      .maybeSingle();
+
+
+  if(error){
+
+    alert(error.message);
+
+    return;
+
+  }
+
+
+  if(!data){
+
+    alert('User not found.');
+
+    return;
+
+  }
+
+
+  openChat(data);
+
+}
+
+
+/* =========================
+   OPEN CHAT
+========================= */
+
+async function openChat(user){
+
+  if(!user || !user.id)
+    return;
+
+
+  currentChatUser =
+    user;
+
+
+  document.getElementById(
+    'app'
+  ).style.display='none';
+
+  document.getElementById(
+    'chatPage'
+  ).style.display='flex';
+
+
+  document.getElementById(
+    'chatTitle'
+  ).textContent =
+    user.display_name ||
+    user.username ||
+    'User';
+
+
+  document.getElementById(
+    'chatUsername'
+  ).textContent =
+    user.username
+      ? '@'+user.username
+      : '';
+
+
+  const avatar =
+    document.getElementById(
+      'headerAvatar'
+    );
+
+
+  avatar.innerHTML='';
+
+
+  avatar.textContent =
+    (
+      user.display_name ||
+      user.username ||
+      'R'
+    )
+    .charAt(0)
+    .toUpperCase();
+
+
+  await loadMessages();
+
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function backToChats(){
+
+  if(isRecording){
+
+    stopVoiceRecording();
+
+  }
+
+
+  document.getElementById(
+    'chatPage'
+  ).style.display='none';
+
+  document.getElementById(
+    'app'
+  ).style.display='block';
+
+
+  currentChatUser=null;
+
+
+  document.getElementById(
+    'messages'
+  ).innerHTML='';
+
+}
+
+
+/* =========================
+   LOAD MESSAGES
+========================= */
+
+async function loadMessages(){
+
+  if(
+    !currentUser ||
+    !currentChatUser
+  )
+    return;
+
+
+  const box =
+    document.getElementById(
+      'messages'
+    );
+
+
+  const ids=[
+    currentUser.id,
+    currentChatUser.id
+  ];
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from('messages')
+      .select('*')
+      .in(
+        'sender_id',
+        ids
+      )
+      .in(
+        'receiver_id',
+        ids
+      )
+      .order(
+        'created_at',
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    console.log(error);
+
+    box.innerHTML =
+      '<div class="loading">' +
+      'Could not load messages.<br><br>' +
+      error.message +
+      '</div>';
+
+    return;
+
+  }
+
+
+  renderMessages(
+    data || []
+  );
+
+}
+
+
+/* =========================
+   RENDER MESSAGES
+========================= */
+
+function renderMessages(messages){
+
+  const box =
+    document.getElementById(
+      'messages'
+    );
+
+
+  box.innerHTML='';
+
+
+  if(messages.length===0){
+
+    box.innerHTML =
+      '<div class="loading">' +
+      'No messages yet.<br>' +
+      'Say hello! 👋' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  messages.forEach(function(msg){
+
+    const div =
+      document.createElement(
+        'div'
+      );
+
+
+    div.className =
+      'message ' +
+      (
+        msg.sender_id === currentUser.id
+          ? 'me'
+          : 'them'
+      );
+
+
+    if(msg.message_type === 'text'){
+
+      const text =
+        document.createElement(
+          'div'
+        );
+
+      text.textContent =
+        msg.content || '';
+
+      div.appendChild(text);
+
+    }
+
+
+    else if(
+      msg.message_type === 'photo'
+    ){
+
+      if(msg.media_url){
+
+        const img =
+          document.createElement(
+            'img'
+          );
+
+        img.src =
+          msg.media_url;
+
+        img.loading='lazy';
+
+        div.appendChild(img);
+
+      }
+
+    }
+
+
+    else if(
+      msg.message_type === 'file'
+    ){
+
+      const link =
+        document.createElement(
+          'a'
+        );
+
+      link.href =
+        msg.media_url || '#';
+
+      link.target='_blank';
+
+      link.className=
+        'fileLink';
+
+      link.textContent =
+        '📎 ' +
+        (
+          msg.file_name ||
+          'File'
+        );
+
+      div.appendChild(link);
+
+    }
+
+
+    else if(
+      msg.message_type === 'voice'
+    ){
+
+      if(msg.media_url){
+
+        const audio =
+          document.createElement(
+            'audio'
+          );
+
+        audio.controls=true;
+
+        audio.className=
+          'voicePlayer';
+
+        audio.src =
+          msg.media_url;
+
+        audio.preload=
+          'metadata';
+
+        div.appendChild(audio);
+
+      }else{
+
+        const text =
+          document.createElement(
+            'div'
+          );
+
+        text.textContent =
+          '🎤 Voice Message';
+
+        div.appendChild(text);
+
+      }
+
+    }
+
+
+    const time =
+      document.createElement(
+        'div'
+      );
+
+    time.className=
+      'messageTime';
+
+
+    if(msg.created_at){
+
+      const date =
+        new Date(
+          msg.created_at
+        );
+
+
+      time.textContent =
+        date.toLocaleTimeString(
+          [],
+          {
+            hour:'2-digit',
+            minute:'2-digit'
+          }
+        );
+
+    }
+
+
+    div.appendChild(time);
+
+    box.appendChild(div);
+
+  });
+
+
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+/* =========================
+   SEND TEXT
+========================= */
+
+async function sendMessage(){
+
+  if(
+    !currentUser ||
+    !currentChatUser
+  ){
+
+    alert(
+      'Please open a chat first.'
+    );
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      'messageInput'
+    );
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text)
+    return;
+
+
+  input.disabled=true;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from('messages')
+      .insert({
+
+        sender_id:
+          currentUser.id,
+
+        receiver_id:
+          currentChatUser.id,
+
+        content:
+          text,
+
+        message_type:
+          'text'
+
+      });
+
+
+  input.disabled=false;
+
+
+  if(error){
+
+    alert(
+      'Could not send message: ' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  input.value='';
+
+  input.style.height='42px';
+
+
+  await loadMessages();
+
+}
+
+
+/* =========================
+   UPLOAD MEDIA
+========================= */
+
+async function uploadFile(
+  file,
+  type
+){
+
+  if(
+    !currentUser ||
+    !currentChatUser
+  ){
+
+    alert(
+      'Please open a chat first.'
+    );
+
+    return;
+
+  }
+
+
+  if(!file)
+    return;
+
+
+  if(
+    file.size >
+    20 * 1024 * 1024
+  ){
+
+    alert(
+      'File must be smaller than 20 MB.'
+    );
+
+    return;
+
+  }
+
+
+  const extension =
+    file.name.includes('.')
+      ? file.name
+          .split('.')
+          .pop()
+      : 'bin';
+
+
+  const filePath =
+    currentUser.id +
+    '/' +
+    Date.now() +
+    '_' +
+    Math.random()
+      .toString(36)
+      .substring(2) +
+    '.' +
+    extension;
+
+
+  const {
+    error:uploadError
+  } =
+    await supabaseClient
+      .storage
+      .from('chat-files')
+      .upload(
+        filePath,
+        file,
+        {
+          cacheControl:'3600',
+          upsert:false
+        }
+      );
+
+
+  if(uploadError){
+
+    console.log(
+      uploadError
+    );
+
+    alert(
+      'Upload failed: ' +
+      uploadError.message
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data:urlData
+  } =
+    supabaseClient
+      .storage
+      .from('chat-files')
+      .getPublicUrl(
+        filePath
+      );
+
+
+  const publicUrl =
+    urlData.publicUrl;
+
+
+  const {
+    error:messageError
+  } =
+    await supabaseClient
+      .from('messages')
+      .insert({
+
+        sender_id:
+          currentUser.id,
+
+        receiver_id:
+          currentChatUser.id,
+
+        content:
+          type === 'photo'
+            ? '📷 Photo'
+            : '📎 File',
+
+        message_type:
+          type,
+
+        media_url:
+          publicUrl,
+
+        file_name:
+          file.name
+
+      });
+
+
+  if(messageError){
+
+    alert(
+      'Message could not be saved: ' +
+      messageError.message
+    );
+
+    return;
+
+  }
+
+
+  await loadMessages();
+
+}
+
+
+/* =========================
+   PHOTO
+========================= */
+
+const photoInput =
+  document.getElementById(
+    'photoInput'
+  );
+
+
+photoInput.addEventListener(
+  'change',
+  async function(){
+
+    const file =
+      this.files[0];
+
+
+    if(!file)
+      return;
+
+
+    if(
+      !file.type.startsWith(
+        'image/'
+      )
+    ){
+
+      alert(
+        'Please choose an image.'
+      );
+
+      this.value='';
+
+      return;
+
+    }
+
+
+    await uploadFile(
+      file,
+      'photo'
+    );
+
+
+    this.value='';
+
+  }
+);
+
+
+/* =========================
+   FILE
+========================= */
+
+const fileInput =
+  document.getElementById(
+    'fileInput'
+  );
+
+
+fileInput.addEventListener(
+  'change',
+  async function(){
+
+    const file =
+      this.files[0];
+
+
+    if(!file)
+      return;
+
+
+    await uploadFile(
+      file,
+      'file'
+    );
+
+
+    this.value='';
+
+  }
+);
+
+
+/* =========================
+   VOICE MIME TYPE
+========================= */
+
+function getSupportedAudioMimeType(){
+
+  if(!window.MediaRecorder)
+    return '';
+
+
+  const types=[
+
+    'audio/webm;codecs=opus',
+
+    'audio/webm',
+
+    'audio/mp4'
+
+  ];
+
+
+  for(
+    const type of types
+  ){
+
+    if(
+      MediaRecorder
+        .isTypeSupported(type)
+    ){
+
+      return type;
+
+    }
+
+  }
+
+
+  return '';
+
+}
+
+
+/* =========================
+   VOICE
+========================= */
+
+async function toggleVoice(){
+
+  if(isRecording){
+
+    stopVoiceRecording();
+
+    return;
+
+  }
+
+
+  if(
+    !currentUser ||
+    !currentChatUser
+  ){
+
+    alert(
+      'Please open a chat first.'
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ){
+
+    alert(
+      'Microphone recording is not supported here.'
+    );
+
+    return;
+
+  }
+
+
+  if(!window.MediaRecorder){
+
+    alert(
+      'Voice recording is not supported on this browser.'
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    voiceStream =
+      await navigator
+        .mediaDevices
+        .getUserMedia({
+          audio:true
+        });
+
+
+    audioChunks=[];
+
+
+    const mimeType =
+      getSupportedAudioMimeType();
+
+
+    if(mimeType){
+
+      mediaRecorder =
+        new MediaRecorder(
+          voiceStream,
+          {
+            mimeType:mimeType
+          }
+        );
+
+    }else{
+
+      mediaRecorder =
+        new MediaRecorder(
+          voiceStream
+        );
+
+    }
+
+
+    mediaRecorder.ondataavailable =
+      function(event){
+
+        if(
+          event.data &&
+          event.data.size > 0
+        ){
+
+          audioChunks.push(
+            event.data
+          );
+
+        }
+
+      };
+
+
+    mediaRecorder.onstop =
+      async function(){
+
+        try{
+
+          const recordedMimeType =
+            mediaRecorder.mimeType ||
+            'audio/webm';
+
+
+          const audioBlob =
+            new Blob(
+              audioChunks,
+              {
+                type:
+                  recordedMimeType
+              }
+            );
+
+
+          if(voiceStream){
+
+            voiceStream
+              .getTracks()
+              .forEach(
+                function(track){
+
+                  track.stop();
+
+                }
+              );
+
+          }
+
+
+          voiceStream=null;
+
+
+          await uploadVoice(
+            audioBlob,
+            recordedMimeType
+          );
+
+        }catch(error){
+
+          console.log(error);
+
+          alert(
+            'Could not process voice message.'
+          );
+
+        }
+
+      };
+
+
+    mediaRecorder.start();
+
+    isRecording=true;
+
+
+    const btn =
+      document.getElementById(
+        'voiceBtn'
+      );
+
+
+    btn.textContent='⏹️';
+
+    btn.title=
+      'Stop recording';
+
+    btn.style.background=
+      '#ffdddd';
+
+  }catch(error){
+
+    console.log(error);
+
+
+    if(voiceStream){
+
+      voiceStream
+        .getTracks()
+        .forEach(
+          function(track){
+
+            track.stop();
+
+          }
+        );
+
+    }
+
+
+    voiceStream=null;
+
+
+    alert(
+      'Microphone permission is required.'
+    );
+
+  }
+
+}
+
+
+function stopVoiceRecording(){
+
+  if(
+    mediaRecorder &&
+    mediaRecorder.state !==
+      'inactive'
+  ){
+
+    mediaRecorder.stop();
+
+  }
+
+
+  isRecording=false;
+
+
+  const btn =
+    document.getElementById(
+      'voiceBtn'
+    );
+
+
+  btn.textContent='🎤';
+
+  btn.title=
+    'Record voice message';
+
+  btn.style.background=
+    'white';
+
+}
+
+
+/* =========================
+   UPLOAD VOICE
+========================= */
+
+async function uploadVoice(
+  audioBlob,
+  mimeType
+){
+
+  if(
+    !currentUser ||
+    !currentChatUser
+  ){
+
+    return;
+
+  }
+
+
+  if(
+    !audioBlob ||
+    audioBlob.size === 0
+  ){
+
+    alert(
+      'No voice recording was created.'
+    );
+
+    return;
+
+  }
+
+
+  if(
+    audioBlob.size >
+    20 * 1024 * 1024
+  ){
+
+    alert(
+      'Voice message is too large.'
+    );
+
+    return;
+
+  }
+
+
+  let extension='webm';
+
+
+  if(
+    mimeType &&
+    mimeType.includes('mp4')
+  ){
+
+    extension='mp4';
+
+  }
+
+
+  const filePath =
+    currentUser.id +
+    '/' +
+    Date.now() +
+    '_' +
+    Math.random()
+      .toString(36)
+      .substring(2) +
+    '.' +
+    extension;
+
+
+  const {
+    error:uploadError
+  } =
+    await supabaseClient
+      .storage
+      .from('chat-files')
+      .upload(
+        filePath,
+        audioBlob,
+        {
+          cacheControl:'3600',
+
+          contentType:
+            mimeType ||
+            'audio/webm',
+
+          upsert:false
+        }
+      );
+
+
+  if(uploadError){
+
+    console.log(
+      uploadError
+    );
+
+    alert(
+      'Voice upload failed: ' +
+      uploadError.message
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data:urlData
+  } =
+    supabaseClient
+      .storage
+      .from('chat-files')
+      .getPublicUrl(
+        filePath
+      );
+
+
+  const publicUrl =
+    urlData.publicUrl;
+
+
+  const {
+    error:messageError
+  } =
+    await supabaseClient
+      .from('messages')
+      .insert({
+
+        sender_id:
+          currentUser.id,
+
+        receiver_id:
+          currentChatUser.id,
+
+        content:
+          '🎤 Voice Message',
+
+        message_type:
+          'voice',
+
+        media_url:
+          publicUrl,
+
+        file_name:
+          'voice-message.' +
+          extension
+
+      });
+
+
+  if(messageError){
+
+    console.log(
+      messageError
+    );
+
+    alert(
+      'Voice message could not be saved: ' +
+      messageError.message
+    );
+
+    return;
+
+  }
+
+
+  audioChunks=[];
+
+
+  await loadMessages();
+
+}
+
+
+/* =========================
+   REALTIME
+========================= */
+
+function subscribeToMessages(){
+
+  if(!currentUser)
+    return;
+
+
+  if(realtimeChannel){
+
+    supabaseClient
+      .removeChannel(
+        realtimeChannel
+      );
+
+  }
+
+
+  realtimeChannel =
+    supabaseClient
+      .channel(
+        'reyuchat-messages-' +
+        currentUser.id
+      )
+      .on(
+        'postgres_changes',
+        {
+          event:'INSERT',
+          schema:'public',
+          table:'messages'
+        },
+        async function(payload){
+
+          const msg =
+            payload.new;
+
+
+          if(!currentUser)
+            return;
+
+
+          const isMine =
+            msg.sender_id ===
+            currentUser.id;
+
+
+          const isForMe =
+            msg.receiver_id ===
+            currentUser.id;
+
+
+          if(
+            !isMine &&
+            !isForMe
+          )
+            return;
+
+
+          if(
+            currentChatUser &&
+            (
+              (
+                msg.sender_id ===
+                currentChatUser.id &&
+                msg.receiver_id ===
+                currentUser.id
+              )
+              ||
+              (
+                msg.sender_id ===
+                currentUser.id &&
+                msg.receiver_id ===
+                currentChatUser.id
+              )
+            )
+          ){
+
+            await loadMessages();
+
+          }
+
+        }
+      )
+      .subscribe();
+
+}
+
+
+/* =========================
+   TEXTAREA
+========================= */
+
+const messageInput =
+  document.getElementById(
+    'messageInput'
+  );
+
+
+messageInput.addEventListener(
+  'input',
+  function(){
+
+    this.style.height='42px';
+
+    this.style.height =
+      Math.min(
+        this.scrollHeight,
+        130
+      ) + 'px';
+
+  }
+);
+
+
+messageInput.addEventListener(
+  'keydown',
+  function(e){
+
+    if(
+      e.key === 'Enter' &&
+      !e.shiftKey
+    ){
+
+      e.preventDefault();
+
+      sendMessage();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   EMOJI
+========================= */
+
+function toggleEmoji(){
+
+  const panel =
+    document.getElementById(
+      'emojiPanel'
+    );
+
+
+  panel.style.display =
+    panel.style.display === 'block'
+      ? 'none'
+      : 'block';
+
+}
+
+
+document
+  .querySelectorAll('.emoji')
+  .forEach(
+    function(el){
+
+      el.onclick =
+        function(){
+
+          messageInput.value +=
+            el.textContent;
+
+          messageInput.focus();
+
+        };
+
+    }
+  );
+
+
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu(){
+
+  const menu =
+    document.getElementById(
+      'mainMenu'
+    );
+
+
+  menu.style.display =
+    menu.style.display === 'block'
+      ? 'none'
+      : 'block';
+
+}
+
+
+function openSearch(){
+
+  document.getElementById(
+    'searchInput'
+  ).focus();
+
+}
+
+
+function searchChats(){
+
+  const query =
+    document.getElementById(
+      'searchInput'
+    )
+    .value
+    .toLowerCase()
+    .trim();
+
+
+  const filtered =
+    allUsers.filter(
+      function(user){
+
+        const name =
+          (
+            user.display_name ||
+            ''
+          ).toLowerCase();
+
+
+        const username =
+          (
+            user.username ||
+            ''
+          ).toLowerCase();
+
+
+        return(
+          name.includes(query) ||
+          username.includes(query)
+        );
+
+      }
+    );
+
+
+  renderUsers(
+    filtered
+  );
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function openProfile(){
+
+  document.getElementById(
+    'mainMenu'
+  ).style.display='none';
+
+
+  document.getElementById(
+    'profileDisplayName'
+  ).value =
+    localStorage.getItem(
+      'reyu_display_name'
+    ) || '';
+
+
+  document.getElementById(
+    'profileUsername'
+  ).value =
+    localStorage.getItem(
+      'reyu_username'
+    ) || '';
+
+
+  document.getElementById(
+    'profileBio'
+  ).value =
+    localStorage.getItem(
+      'reyu_bio'
+    ) || '';
+
+
+  const photo =
+    localStorage.getItem(
+      'reyu_profile_photo'
+    );
+
+
+  const avatar =
+    document.getElementById(
+      'profileAvatar'
+    );
+
+
+  if(photo){
+
+    avatar.innerHTML =
+      '<img src="' +
+      photo +
+      '" alt="Profile">';
+
+  }else{
+
+    avatar.textContent =
+      (
+        localStorage.getItem(
+          'reyu_display_name'
+        ) ||
+        'R'
+      )
+      .charAt(0)
+      .toUpperCase();
+
+  }
+
+
+  document.getElementById(
+    'profileModal'
+  ).style.display='flex';
+
+}
+
+
+function closeProfile(){
+
+  document.getElementById(
+    'profileModal'
+  ).style.display='none';
+
+}
+
+
+/* =========================
+   PROFILE PHOTO
+========================= */
+
+document
+  .getElementById(
+    'profilePhoto'
+  )
+  .addEventListener(
+    'change',
+    function(){
+
+      const file =
+        this.files[0];
+
+
+      if(!file)
+        return;
+
+
+      if(
+        !file.type.startsWith(
+          'image/'
+        )
+      ){
+
+        alert(
+          'Please choose an image.'
+        );
+
+        this.value='';
+
+        return;
+
+      }
+
+
+      if(
+        file.size >
+        2 * 1024 * 1024
+      ){
+
+        alert(
+          'Profile photo must be smaller than 2 MB.'
+        );
+
+        this.value='';
+
+        return;
+
+      }
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function(){
+
+          localStorage.setItem(
+            'reyu_profile_photo',
+            reader.result
+          );
+
+
+          document.getElementById(
+            'profileAvatar'
+          ).innerHTML =
+            '<img src="' +
+            reader.result +
+            '" alt="Profile">';
+
+        };
+
+
+      reader.readAsDataURL(
+        file
+      );
+
+    }
+  );
+
+
+/* =========================
+   SAVE PROFILE
+========================= */
+
+async function saveProfile(){
+
+  if(!currentUser){
+
+    alert(
+      'Please login first.'
+    );
+
+    return;
+
+  }
+
+
+  const displayName =
+    document.getElementById(
+      'profileDisplayName'
+    )
+    .value
+    .trim();
+
+
+  let username =
+    document.getElementById(
+      'profileUsername'
+    )
+    .value
+    .trim()
+    .toLowerCase()
+    .replace(/^@/,'');
+
+
+  const bio =
+    document.getElementById(
+      'profileBio'
+    )
+    .value
+    .trim();
+
+
+  if(
+    !displayName ||
+    !username
+  ){
+
+    alert(
+      'Display Name and Username are required.'
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !/^[a-z0-9_]+$/.test(
+      username
+    )
+  ){
+
+    alert(
+      'Username can contain only letters, numbers and _.'
+    );
+
+    return;
+
+  }
+
+
+  if(username.length < 3){
+
+    alert(
+      'Username must be at least 3 characters.'
+    );
+
+    return;
+
+  }
+
+
+  /* CHECK IF USERNAME
+     BELONGS TO SOMEONE ELSE */
+
+  const {
+    data:existing
+  } =
+    await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq(
+        'username',
+        username
+      )
+      .neq(
+        'id',
+        currentUser.id
+      )
+      .maybeSingle();
+
+
+  if(existing){
+
+    alert(
+      'This username is already taken.'
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from('profiles')
+      .update({
+
+        display_name:
+          displayName,
+
+        username:
+          username
+
+      })
+      .eq(
+        'id',
+        currentUser.id
+      );
+
+
+  if(error){
+
+    alert(
+      'Profile update failed:\n\n' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  localStorage.setItem(
+    'reyu_display_name',
+    displayName
+  );
+
+  localStorage.setItem(
+    'reyu_username',
+    username
+  );
+
+  localStorage.setItem(
+    'reyu_bio',
+    bio
+  );
+
+
+  closeProfile();
+
+
+  await loadUsers();
+
+
+  alert(
+    'Profile saved successfully! ⭐'
+  );
+
+}
+
+
+/* =========================
+   OTHER FEATURES
+========================= */
+
+function showGroups(){
+
+  document.getElementById(
+    'mainMenu'
+  ).style.display='none';
+
+
+  alert(
+    'Groups feature will be added soon ⭐'
+  );
+
+}
+
+
+function showChannels(){
+
+  document.getElementById(
+    'mainMenu'
+  ).style.display='none';
+
+
+  alert(
+    'Channels feature will be added soon ⭐'
+  );
+
+}
+
+
+function showSettings(){
+
+  document.getElementById(
+    'mainMenu'
+  ).style.display='none';
+
+
+  alert(
+    'Settings feature will be added soon ⭐'
+  );
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+async function logout(){
+
+  if(isRecording){
+
+    stopVoiceRecording();
+
+  }
+
+
+  if(realtimeChannel){
+
+    await supabaseClient
+      .removeChannel(
+        realtimeChannel
+      );
+
+    realtimeChannel=null;
+
+  }
+
+
+  await supabaseClient
+    .auth
+    .signOut();
+
+
+  currentUser=null;
+
+  currentChatUser=null;
+
+  allUsers=[];
+
+
+  document.getElementById(
+    'app'
+  ).style.display='none';
+
+  document.getElementById(
+    'chatPage'
+  ).style.display='none';
+
+  document.getElementById(
+    'loginPage'
+  ).style.display='flex';
+
+}
+
+
+/* =========================
+   SESSION
+========================= */
+
+async function checkSession(){
+
+  try{
+
+    const {
+      data
+    } =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if(
+      data &&
+      data.session
+    ){
+
+      currentUser =
+        data.session.user;
+
+
+      await loadProfile();
+
+      await showApp();
+
+    }else{
+
+      document.getElementById(
+        'loginPage'
+      ).style.display='flex';
+
+    }
+
+  }catch(error){
+
+    console.log(
+      'Session error:',
+      error
+    );
+
+    document.getElementById(
+      'loginPage'
+    ).style.display='flex';
+
+  }
+
+}
+
+
+checkSession();
+
+
+/* =========================
+   AUTH STATE
+========================= */
+
+supabaseClient
+  .auth
+  .onAuthStateChange(
+    function(
+      event,
+      session
+    ){
+
+      if(
+        event === 'SIGNED_IN' &&
+        session
+      ){
+
+        currentUser =
+          session.user;
+
+      }
+
+
+      if(
+        event === 'SIGNED_OUT'
+      ){
+
+        currentUser=null;
+
+      }
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
