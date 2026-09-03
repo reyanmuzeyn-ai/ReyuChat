@@ -1,0 +1,10 @@
+{
+  "name": "ReyuChat ⭐",
+  "short_name": "ReyuChat",
+  "description": "A simple real-time messaging app",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0088cc",
+  "theme_color": "#0088cc",
+  "orientation": "portrait"
+}
